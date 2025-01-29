@@ -1,23 +1,22 @@
-import React, { useState } from "react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
-// import SignIn from "./SignIn"; // Путь к компоненту для входа
-// import SignUp from "./SignUp"; // Путь к компоненту для регистрации
+import Home from "./components/home/Home";
+// import Home from "./components/Home";
+
+const router = createBrowserRouter([
+  { path: "/", element: <Navigate to="/signin" /> },
+  { path: "/SignIn", element: <SignIn /> },
+  { path: "/SignUp", element: <SignUp /> },
+  { path: "/home", element: <Home /> },
+]);
 
 const App = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
-
-  return (
-    <div>
-      <h1>Welcome to the Chat App</h1>
-      {isSignUp ? <SignUp /> : <SignIn />}
-      <button onClick={() => setIsSignUp(!isSignUp)}>
-        {isSignUp
-          ? "Already have an account? Sign In"
-          : "Don't have an account? Sign Up"}
-      </button>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;

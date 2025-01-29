@@ -40,7 +40,7 @@ const SignUp = () => {
       </form>
       <div className="switch">
         <p>
-          Already have an account? <Link to="/signup">Sign In</Link>
+          Already have an account? <Link to="/SignIn">Sign In</Link>
         </p>
       </div>
     </div>

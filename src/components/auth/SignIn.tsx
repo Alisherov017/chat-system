@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { loginUser } from "./firebase"; // Импортируем функцию для входа
 import "./SignIn.css"; // Импортируем стили
 import { loginUser } from "../../firebase";
 import { Link } from "react-router-dom";
@@ -16,7 +15,7 @@ const SignIn = () => {
     if (user) {
       alert("Login successful!");
     } else {
-      setError("Login failed. Please check your credentials.");
+      setError("Login failed. Please check your.");
     }
   };
 
@@ -41,7 +40,7 @@ const SignIn = () => {
       </form>
       <div className="switch">
         <p>
-          Don't have an account? <Link to="/signup">S ign Up</Link>
+          Don't have an account? <Link to="/SignUp">Sign Up</Link>
         </p>
       </div>
     </div>
