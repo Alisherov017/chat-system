@@ -1,0 +1,15 @@
+.home-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 25%;
+  background: #f4f4f4;
+  padding: 10px;
+}
+
+.chat-container {
+  width: 75%;
+  padding: 10px;
+}

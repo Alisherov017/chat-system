@@ -1,10 +1,16 @@
-import React from "react";
+import ChannelList from "../ChannelList";
+import Chat from "../chat/Chat";
+import "./Home.css"; // Подключаем стили
 
 const Home = () => {
   return (
-    <div>
-      <h1>Welcome to the Chat App</h1>
-      <p>You are logged in!</p>
+    <div className="home-container">
+      <div className="sidebar">
+        <ChannelList />
+      </div>
+      <div className="chat-container">
+        <Chat />
+      </div>
     </div>
   );
 };

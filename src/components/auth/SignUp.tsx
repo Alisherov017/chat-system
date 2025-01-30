@@ -1,28 +1,36 @@
 import React, { useState } from "react";
-import "./SignUp.css"; // Импортируем стили
-import { registerUser } from "../../firebase";
-import { Link } from "react-router-dom";
+import "./SignUp.css";
+import { registerUser } from "../../firebase/firebase";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     const user = await registerUser(email, password);
     if (user) {
-      alert("Registration successful!");
+      toast.success("Registration successful!");
+      navigate("/SignIn");
     } else {
-      setError("Registration failed. Please try again.");
+      toast.error("Registration failed. Please try again.");
     }
   };
 
   return (
     <div className="signup-container">
       <h2>Sign Up</h2>
-      {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -36,6 +44,12 @@ const SignUp = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
         <button type="submit">Sign Up</button>
       </form>
       <div className="switch">
@@ -43,6 +57,7 @@ const SignUp = () => {
           Already have an account? <Link to="/SignIn">Sign In</Link>
         </p>
       </div>
+      <ToastContainer />
     </div>
   );
 };

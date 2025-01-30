@@ -4,8 +4,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Твой firebaseConfig
 const firebaseConfig = {
   apiKey: "AIzaSyDm4ttSrJ62e9Wp8dgOjtfLGGuXCeJKAL8",
   authDomain: "chat-system-71c01.firebaseapp.com",
@@ -19,6 +19,9 @@ const firebaseConfig = {
 // Инициализация Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app); // Инициализируем Firestore
+
+export { auth, db };
 
 // Функции для регистрации и входа
 export const registerUser = async (email: string, password: string) => {

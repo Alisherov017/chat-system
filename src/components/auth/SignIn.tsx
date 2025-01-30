@@ -1,28 +1,30 @@
 import React, { useState } from "react";
 import "./SignIn.css"; // Импортируем стили
-import { loginUser } from "../../firebase";
-import { Link } from "react-router-dom";
+import { loginUser } from "../../firebase/firebase";
+import { Link, useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate(); // Получаем функцию для навигации
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const user = await loginUser(email, password);
     if (user) {
-      alert("Login successful!");
+      toast.success("Login successful!");
+      navigate("/home"); // Перенаправляем на страницу Home после успешного входа
     } else {
-      setError("Login failed. Please check your.");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
   return (
     <div className="signin-container">
       <h2>Sign In</h2>
-      {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -43,6 +45,7 @@ const SignIn = () => {
           Don't have an account? <Link to="/SignUp">Sign Up</Link>
         </p>
       </div>
+      <ToastContainer />
     </div>
   );
 };
