@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import "./ChannelList.css";
 import { useStore } from "../store/useChatStore";
 import { joinChannel } from "../firebase/channelService";
-import { useNavigate } from "react-router-dom";
+import "./ChannelList.css";
 
-const ChannelList = () => {
-  const { channels, addChannel, user, setCurrentChannelId } = useStore();
+interface ChannelListProps {
+  setCurrentChannelId: (channelId: string) => void;
+}
+
+const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
+  const { channels, addChannel, user } = useStore();
+  console.log(channels, "channels useStore");
+
   const [showModal, setShowModal] = useState(false);
   const [channelName, setChannelName] = useState("");
-  const navigate = useNavigate();
 
   const handleCreateChannel = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,19 +27,23 @@ const ChannelList = () => {
 
   const handleJoinChannel = async (channelId: string) => {
     if (user?.uid) {
-      await joinChannel(channelId, user.uid); // Добавляем участника в канал
-      setCurrentChannelId(channelId); // Устанавливаем канал как текущий
-      navigate(`/chat/${channelId}`);
+      await joinChannel(channelId, user.uid);
+      setCurrentChannelId(channelId); // Обновляем канал, который выбран
     }
   };
 
   return (
-    <div>
-      <p>Hello {user?.name}</p>
-      <button onClick={() => setShowModal(true)}>Create new Channel</button>
+    <div className="channel-list">
+      <p className="welcome-message">Hello {user?.name}</p>
+      <button
+        className="create-channel-button"
+        onClick={() => setShowModal(true)}
+      >
+        Create new Channel
+      </button>
 
       <h3>Channels</h3>
-      <ul>
+      <ul className="channel-items">
         {channels
           .sort(
             (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
@@ -47,7 +55,12 @@ const ChannelList = () => {
 
             return (
               <li key={channel.id} className="channel-item">
-                <span className="channel-name">{channel.name}</span>
+                <span
+                  className="channel-name"
+                  onClick={() => setCurrentChannelId(channel.id)}
+                >
+                  {channel.name}
+                </span>
                 {!isUserInChannel && (
                   <button
                     onClick={() => handleJoinChannel(channel.id)}
@@ -72,9 +85,16 @@ const ChannelList = () => {
                 placeholder="Channel Name"
                 value={channelName}
                 onChange={(e) => setChannelName(e.target.value)}
+                className="channel-name-input"
               />
-              <button type="submit">Create Channel</button>
-              <button type="button" onClick={() => setShowModal(false)}>
+              <button type="submit" className="submit-channel-button">
+                Create Channel
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="cancel-button"
+              >
                 Cancel
               </button>
             </form>

@@ -1,49 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useStore } from "../../store/useChatStore";
-import { getMessages, sendMessage } from "../../firebase/messageService";
+import { getMessages } from "../../firebase/messageService";
+import "./Chat.css";
 
-const Chat = () => {
-  const { channelId } = useParams<{ channelId: string }>();
-  console.log(channelId, "channek id");
+interface ChatProps {
+  channelId: string;
+}
 
-  const { messages, setMessages, user } = useStore();
+const Chat: React.FC<ChatProps> = ({ channelId }) => {
+  const { messages, sendMessage } = useStore();
+  console.log(messages, "messages useStore");
+
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (channelId) {
-      getMessages(channelId, (newMessages) => {
-        setMessages(newMessages); // Обновляем состояние сообщений в хранилище
-      });
-    }
-  }, [channelId, setMessages]);
+    getMessages(channelId, (newMessages) => {});
+  }, [channelId]);
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      sendMessage(message, channelId || ""); // Отправляем сообщение в канал
-      setMessage(""); // Очищаем поле ввода
+      sendMessage(message); // Отправить сообщение в чат
+      setMessage("");
     }
   };
 
   return (
-    <div className="allContainer">
+    <div>
       <h2>Chat for Channel: {channelId}</h2>
-      <div className="messages-container">
-        {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <strong>{msg.senderId}</strong>: {msg.message}
-          </div>
+      <div>
+        {messages.map((msg) => (
+          <p key={msg.timestamp}>{msg.message}</p>
         ))}
       </div>
-      <div className="message-input">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message"
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button onClick={handleSendMessage}>Send</button>
     </div>
   );
 };
