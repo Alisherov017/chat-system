@@ -1,4 +1,43 @@
-.chat {
+.messages-container {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+}
+
+.message {
+  padding: 5px;
+  margin: 5px 0;
+}
+
+.message-input {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.message-input input {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.message-input button {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.message-input button:hover {
+  background-color: #218838;
+}
+.allContainer {
   width: 75%;
-  padding: 20px;
 }

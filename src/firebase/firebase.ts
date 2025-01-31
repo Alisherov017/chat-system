@@ -3,8 +3,9 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDm4ttSrJ62e9Wp8dgOjtfLGGuXCeJKAL8",
@@ -24,16 +25,33 @@ const db = getFirestore(app); // Инициализируем Firestore
 export { auth, db };
 
 // Функции для регистрации и входа
-export const registerUser = async (email: string, password: string) => {
+export const registerUser = async (
+  email: string,
+  password: string,
+  name: string
+) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    return userCredential.user; // Возвращает пользователя
+    const user = userCredential.user;
+
+    // ✅ Обновляем профиль пользователя в Firebase Authentication
+    await updateProfile(user, { displayName: name });
+
+    // ✅ Сохраняем данные пользователя в Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      name: name,
+      email: user.email,
+      createdAt: new Date(),
+    });
+
+    return { uid: user.uid, name, email: user.email };
   } catch (error) {
-    console.error(error);
+    console.error("Error registering user:", error);
     return null;
   }
 };

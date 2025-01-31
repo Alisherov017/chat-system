@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import "./SignIn.css"; // Импортируем стили
+import "./SignIn.css";
 import { loginUser } from "../../firebase/firebase";
-import { Link, useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Получаем функцию для навигации
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +16,7 @@ const SignIn = () => {
     const user = await loginUser(email, password);
     if (user) {
       toast.success("Login successful!");
-      navigate("/home"); // Перенаправляем на страницу Home после успешного входа
+      navigate("/home");
     } else {
       toast.error("Login failed. Please check your credentials.");
     }
@@ -31,7 +31,7 @@ const SignIn = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        />
+        />{" "}
         <input
           type="password"
           placeholder="Password"

@@ -1,48 +1,67 @@
 import React, { useState } from "react";
-import { createChannel, getChannels } from "../firebase/channelService";
 import "./ChannelList.css";
-// import { createChannel } from "../../services/channelService"; // Путь к функции создания канала
+import { useStore } from "../store/useChatStore";
+import { joinChannel } from "../firebase/channelService";
+import { useNavigate } from "react-router-dom";
 
 const ChannelList = () => {
-  const [channels, setChannels] = useState<any[]>([]); // Состояние для каналов
-  const [showModal, setShowModal] = useState(false); // Состояние для отображения модалки
-  const [channelName, setChannelName] = useState(""); // Состояние для названия канала
+  const { channels, addChannel, user, setCurrentChannelId } = useStore();
+  const [showModal, setShowModal] = useState(false);
+  const [channelName, setChannelName] = useState("");
+  const navigate = useNavigate();
 
   const handleCreateChannel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (channelName.trim()) {
-      await createChannel(channelName); // Создаём канал
-      setShowModal(false); // Закрываем модалку
-      setChannelName(""); // Очищаем поле ввода
+      await addChannel(channelName);
+      setShowModal(false);
+      setChannelName("");
     } else {
       alert("Please enter a valid channel name.");
     }
   };
 
-  // Получение каналов (сделать это по необходимости)
-  const loadChannels = async () => {
-    // Каналы будут загружаться из Firestore
-    const fetchedChannels = await getChannels();
-    setChannels(fetchedChannels);
+  const handleJoinChannel = async (channelId: string) => {
+    if (user?.uid) {
+      await joinChannel(channelId, user.uid); // Добавляем участника в канал
+      setCurrentChannelId(channelId); // Устанавливаем канал как текущий
+      navigate(`/chat/${channelId}`);
+    }
   };
-
-  React.useEffect(() => {
-    loadChannels();
-  }, []);
 
   return (
     <div>
-      <h3>Channels</h3>
+      <p>Hello {user?.name}</p>
       <button onClick={() => setShowModal(true)}>Create new Channel</button>
+
+      <h3>Channels</h3>
       <ul>
-        {channels.map((channel) => (
-          <li key={channel.id}>
-            <button>{channel.name}</button>
-          </li>
-        ))}
+        {channels
+          .sort(
+            (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+          ) // Сортировка по времени
+          .map((channel) => {
+            const isUserInChannel = channel.participants.includes(
+              user?.uid || ""
+            );
+
+            return (
+              <li key={channel.id} className="channel-item">
+                <span className="channel-name">{channel.name}</span>
+                {!isUserInChannel && (
+                  <button
+                    onClick={() => handleJoinChannel(channel.id)}
+                    className="join-button"
+                  >
+                    Join Channel
+                  </button>
+                )}
+              </li>
+            );
+          })}
       </ul>
 
-      {/* Модалка для создания канала */}
+      {/* Модалка создания канала */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">

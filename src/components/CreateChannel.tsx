@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { createChannel } from "../firebase/channelService";
-// import { createChannel } from "../../services/channelService"; // Путь к файлу с функцией создания канала
 
 const CreateChannel = () => {
   const [channelName, setChannelName] = useState("");
@@ -9,8 +8,8 @@ const CreateChannel = () => {
     e.preventDefault();
 
     if (channelName.trim()) {
-      await createChannel(channelName); // Создаём канал
-      setChannelName(""); // Очищаем поле ввода
+      await createChannel(channelName);
+      setChannelName("");
       alert("Channel created successfully!");
     } else {
       alert("Please provide a channel name.");
