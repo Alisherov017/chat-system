@@ -1,5 +1,4 @@
 .channel-list {
-  /* width: 25%; */
   background: #f8f8f8;
   border-right: 1px solid #ddd;
   padding: 10px;
@@ -85,6 +84,17 @@ button[type="button"] {
   background-color: #ccc;
 }
 
+.welcome-message {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.top-channel {
+  color: #2c3e50;
+  margin-top: 30px;
+  margin-bottom: 0;
+}
+
 /*! ============= */
 .channel-item {
   display: flex;
@@ -106,12 +116,12 @@ button[type="button"] {
   font-size: 16px;
   font-weight: bold;
   color: #333;
-  flex-grow: 1; /* Чтобы название канала занимало все пространство */
+  flex-grow: 1;
 }
 
 .join-button {
   padding: 8px 15px;
-  background-color: #28a745; /* Зеленый для кнопки Join */
+  background-color: #1e7432;
   color: white;
   border: none;
   border-radius: 5px;
@@ -162,4 +172,11 @@ button[type="button"] {
   border: none;
   cursor: pointer;
   margin-top: 10px;
+}
+
+/* ========== */
+.user_1 {
+  color: #1e7432;
+  font-size: 20px;
+  font-weight: 600;
 }

@@ -60,3 +60,14 @@
 .signup-container .switch a:hover {
   text-decoration: underline;
 }
+
+.Toastify__toast-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+.Toastify__toast {
+  display: flex !important;
+  opacity: 1 !important;
+}

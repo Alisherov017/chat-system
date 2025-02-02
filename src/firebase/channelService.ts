@@ -5,20 +5,19 @@ import {
   onSnapshot,
   serverTimestamp,
   updateDoc,
-  arrayUnion,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
 import { Channel } from "../store/useChatStore";
-// import { useStore } from "zustand";
 
-// Функция для создания канала
+// Function to create a channel
 export const createChannel = async (channelName: string) => {
   try {
     const docRef = await addDoc(collection(db, "channels"), {
       name: channelName,
-      creatorId: auth.currentUser?.uid, // Создатель канала
-      participants: [auth.currentUser?.uid], // Создатель будет первым участником
+      creatorId: auth.currentUser?.uid,
+      participants: [auth.currentUser?.displayName],
       createdAt: serverTimestamp(),
     });
     console.log("Channel created with ID: ", docRef.id);
@@ -27,7 +26,7 @@ export const createChannel = async (channelName: string) => {
   }
 };
 
-// Функция для получения всех каналов
+// Function to get all channels
 export const getChannels = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "channels"));
@@ -57,22 +56,43 @@ export const subscribeToChannels = (
   });
 };
 
-// Функция для добавления участника в канал
+// Function to add a participant to a channel
 export const addParticipantToChannel = async (
   channelId: string,
-  userId: string
+  userId: string,
+  userName: string
 ) => {
-  const channelRef = doc(db, "channels", channelId);
-  await updateDoc(channelRef, {
-    participants: arrayUnion(userId), // Добавляем пользователя в массив участников
-  });
+  try {
+    const channelRef = doc(db, "channels", channelId);
+    const channelDoc = await getDoc(channelRef);
+
+    if (channelDoc.exists()) {
+      const participants = channelDoc.data()?.participants || [];
+      participants.push({ userId, userName });
+
+      await updateDoc(channelRef, { participants });
+      console.log(
+        `User ${userName} with ID ${userId} joined channel ${channelId}`
+      );
+    }
+  } catch (error) {
+    console.error("Error adding participant:", error);
+  }
 };
 
-export const joinChannel = async (channelId: string, userId: string) => {
-  if (!userId) return;
+// joining to the channel
+export const joinChannel = async (
+  channelId: string,
+  userId: string,
+  userName: string
+) => {
+  if (!userId || !userName) return;
+
   try {
-    await addParticipantToChannel(channelId, userId);
-    console.log(`User ${userId} joined channel ${channelId}`);
+    await addParticipantToChannel(channelId, userId, userName);
+    console.log(
+      `User ${userName} with ID ${userId} joined channel ${channelId}`
+    );
   } catch (error) {
     console.error("Error joining channel:", error);
   }

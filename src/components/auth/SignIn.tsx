@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import "./SignIn.css";
-import { loginUser } from "../../firebase/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import "./SignIn.css";
 import "react-toastify/dist/ReactToastify.css";
+
+import { loginUser } from "../../firebase/firebase";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,9 @@ const SignIn = () => {
     const user = await loginUser(email, password);
     if (user) {
       toast.success("Login successful!");
-      navigate("/home");
+      setTimeout(() => {
+        navigate("/home");
+      }, 1500);
     } else {
       toast.error("Login failed. Please check your credentials.");
     }
@@ -45,7 +48,7 @@ const SignIn = () => {
           Don't have an account? <Link to="/SignUp">Sign Up</Link>
         </p>
       </div>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./SignUp.css";
-import { registerUser } from "../../firebase/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import "./SignUp.css";
 import "react-toastify/dist/ReactToastify.css";
-// import { useStore } from "../../store/useChatStore";
+
+import { registerUser } from "../../firebase/firebase";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -13,22 +13,24 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  // const { setUser } = useStore();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
+      console.log("Passwords do not match.");
       toast.error("Passwords do not match.");
       return;
     }
 
     const user = await registerUser(email, password, name);
     if (user) {
+      console.log("Toast Success: Registration successful!");
       toast.success("Registration successful!");
-      // setUser(user);
-      navigate("/SignIn");
+      setTimeout(() => {
+        navigate("/SignIn");
+      }, 1500);
     } else {
+      console.log("Registration failed. Please try again.");
       toast.error("Registration failed. Please try again.");
     }
   };
@@ -68,7 +70,7 @@ const SignUp = () => {
           Already have an account? <Link to="/SignIn">Sign In</Link>
         </p>
       </div>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

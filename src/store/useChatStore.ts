@@ -7,7 +7,8 @@ import {
 } from "../firebase/channelService";
 import { getMessages, sendMessage } from "../firebase/messageService";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import { auth, db } from "../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 interface AppUser {
   uid: string;
@@ -19,12 +20,13 @@ export interface Channel {
   id: string;
   name: string;
   createdAt?: { seconds: number; nanoseconds: number };
-  participants: string[];
+  participants: (string | { userId: string; userName: string })[];
 }
 
 interface Message {
   senderId: string;
   message: string;
+  senderName: string;
   timestamp: any;
 }
 
@@ -37,7 +39,7 @@ interface Store {
   loadChannels: () => Promise<void>;
   addChannel: (name: string) => Promise<void>;
   setCurrentChannelId: (channelId: string | null) => void;
-  sendMessage: (message: string) => void;
+  sendMessageStore: (message: string) => void;
   subscribeToMessages: () => void;
   setUser: (user: AppUser) => void;
   logout: () => void;
@@ -47,17 +49,23 @@ export const useStore = create<Store>((set, get) => {
   subscribeToChannels((channels) => {
     set({ channels });
   });
-  onAuthStateChanged(auth, (firebaseUser) => {
+
+  onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
-      set({
+      const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+      const nameFromDB = userDoc.exists()
+        ? userDoc.data().name
+        : firebaseUser.displayName || "No Name";
+
+      useStore.setState({
         user: {
           uid: firebaseUser.uid,
           email: firebaseUser.email || "",
-          name: firebaseUser.displayName || "No Name",
+          name: nameFromDB,
         },
       });
     } else {
-      set({ user: null });
+      useStore.setState({ user: null });
     }
   });
 
@@ -81,10 +89,19 @@ export const useStore = create<Store>((set, get) => {
       get().subscribeToMessages();
     },
 
-    sendMessage: (message) => {
-      const { currentChannelId } = get();
-      if (currentChannelId) {
-        sendMessage(message, currentChannelId);
+    sendMessageStore: (message: string) => {
+      const { currentChannelId, user } = get();
+      // console.log(user, "user get() user get() user get() ");
+      // console.log(currentChannelId, "currentChannelId get() ");
+      if (!currentChannelId) {
+        console.log("Please select a channel before sending a message.");
+        return;
+      }
+
+      if (currentChannelId && user && user.name) {
+        sendMessage(message, currentChannelId, user.name);
+      } else {
+        console.error("User name is not defined");
       }
     },
 
@@ -99,24 +116,32 @@ export const useStore = create<Store>((set, get) => {
     setUser: (user) => set({ user }),
     logout: () => set({ user: null }),
 
-    // ✅ Функция для присоединения к каналу
     joinChannel: async (channelId: string) => {
       const { user, channels } = get();
       if (!user) return;
 
-      await addParticipantToChannel(channelId, user.uid);
+      if (user && user.name) {
+        await addParticipantToChannel(channelId, user.uid, user.name);
+      } else {
+        console.error("User name is not defined");
+      }
 
-      // Обновляем список каналов
+      // Updating the list of channels and participants
       const updatedChannels = channels.map((ch) =>
         ch.id === channelId
-          ? { ...ch, participants: [...ch.participants, user.uid] }
+          ? {
+              ...ch,
+              participants: [
+                ...ch.participants,
+                { userId: user.uid, userName: user.name ?? "Unknown" },
+              ],
+            }
           : ch
       );
 
       set({ channels: updatedChannels });
     },
 
-    // ✅ Функция проверки, в канале ли пользователь
     isUserInChannel: (channelId: string) => {
       const { user, channels } = get();
       if (!user) return false;

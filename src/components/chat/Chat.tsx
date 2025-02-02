@@ -1,43 +1,72 @@
 import React, { useState, useEffect } from "react";
+import "./Chat.css";
+import { Link } from "react-router-dom";
+
 import { useStore } from "../../store/useChatStore";
 import { getMessages } from "../../firebase/messageService";
-import "./Chat.css";
 
 interface ChatProps {
   channelId: string;
 }
 
 const Chat: React.FC<ChatProps> = ({ channelId }) => {
-  const { messages, sendMessage } = useStore();
-  console.log(messages, "messages useStore");
+  const { messages, setMessages, channels, sendMessageStore } = useStore();
 
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    getMessages(channelId, (newMessages) => {});
-  }, [channelId]);
+    const unsubscribe = getMessages(channelId, (newMessages) => {
+      setMessages(newMessages);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [channelId, setMessages]);
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      sendMessage(message); // Отправить сообщение в чат
+      sendMessageStore(message);
       setMessage("");
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  };
+
   return (
-    <div>
-      <h2>Chat for Channel: {channelId}</h2>
-      <div>
-        {messages.map((msg) => (
-          <p key={msg.timestamp}>{msg.message}</p>
+    <div className="chat-container">
+      <div className="head">
+        <h2>
+          Channel:{" "}
+          {channels.find((item) => item.id === channelId)?.name ||
+            "No Channel Selected"}
+        </h2>
+        <Link to="/ViewParticipants">
+          <span className="participants">View participants</span>
+        </Link>
+      </div>
+
+      <div className="messages-container">
+        {messages.map((msg, index) => (
+          <p key={index}>
+            <strong>{msg.senderName}</strong>: {msg.message}
+          </p>
         ))}
       </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={handleSendMessage}>Send</button>
+
+      <div className="message-input-container">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
     </div>
   );
 };

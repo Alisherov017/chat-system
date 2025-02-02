@@ -17,14 +17,14 @@ const firebaseConfig = {
   measurementId: "G-WSGMZTQNHY",
 };
 
-// Инициализация Firebase
+// Firebase initialization
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app); // Инициализируем Firestore
+const db = getFirestore(app);
 
 export { auth, db };
 
-// Функции для регистрации и входа
+// Functions for registration and login
 export const registerUser = async (
   email: string,
   password: string,
@@ -38,10 +38,9 @@ export const registerUser = async (
     );
     const user = userCredential.user;
 
-    // ✅ Обновляем профиль пользователя в Firebase Authentication
     await updateProfile(user, { displayName: name });
 
-    // ✅ Сохраняем данные пользователя в Firestore
+    // Saving user data to Firestore
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       name: name,
@@ -63,7 +62,7 @@ export const loginUser = async (email: string, password: string) => {
       email,
       password
     );
-    return userCredential.user; // Возвращает пользователя
+    return userCredential.user;
   } catch (error) {
     console.error(error);
     return null;

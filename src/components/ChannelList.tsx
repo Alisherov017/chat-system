@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useStore } from "../store/useChatStore";
 import { joinChannel } from "../firebase/channelService";
 import "./ChannelList.css";
+import { toast, ToastContainer } from "react-toastify";
 
 interface ChannelListProps {
   setCurrentChannelId: (channelId: string) => void;
@@ -9,7 +10,7 @@ interface ChannelListProps {
 
 const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
   const { channels, addChannel, user } = useStore();
-  console.log(channels, "channels useStore");
+  // console.log(user, "user user user user useStore");
 
   const [showModal, setShowModal] = useState(false);
   const [channelName, setChannelName] = useState("");
@@ -20,21 +21,32 @@ const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
       await addChannel(channelName);
       setShowModal(false);
       setChannelName("");
+      toast.success("Channel created successfully!");
     } else {
-      alert("Please enter a valid channel name.");
+      toast.error("Please provide a channel name  ");
     }
   };
 
   const handleJoinChannel = async (channelId: string) => {
-    if (user?.uid) {
-      await joinChannel(channelId, user.uid);
-      setCurrentChannelId(channelId); // Обновляем канал, который выбран
+    if (user?.uid && user?.name) {
+      await joinChannel(channelId, user.uid, user.name);
+
+      useStore.setState((state) => ({
+        channels: state.channels.map((ch) =>
+          ch.id === channelId
+            ? { ...ch, participants: [...ch.participants, user.uid] }
+            : ch
+        ),
+      }));
+      setCurrentChannelId(channelId);
     }
   };
 
   return (
     <div className="channel-list">
-      <p className="welcome-message">Hello {user?.name}</p>
+      <p className="welcome-message">
+        Hello <span className="user_1"> {user?.name}</span>
+      </p>
       <button
         className="create-channel-button"
         onClick={() => setShowModal(true)}
@@ -42,16 +54,17 @@ const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
         Create new Channel
       </button>
 
-      <h3>Channels</h3>
+      <h3 className="top-channel">Channels</h3>
       <ul className="channel-items">
         {channels
           .sort(
             (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-          ) // Сортировка по времени
+          ) // sort by time
           .map((channel) => {
-            const isUserInChannel = channel.participants.includes(
-              user?.uid || ""
+            const isUserInChannel = channel.participants.some((p) =>
+              typeof p === "string" ? p === user?.uid : p.userId === user?.uid
             );
+            // console.log(isUserInChannel, "isUserInChannel isUserInChannel");
 
             return (
               <li key={channel.id} className="channel-item">
@@ -74,7 +87,7 @@ const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
           })}
       </ul>
 
-      {/* Модалка создания канала */}
+      {/* modal  */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -101,6 +114,7 @@ const ChannelList: React.FC<ChannelListProps> = ({ setCurrentChannelId }) => {
           </div>
         </div>
       )}
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

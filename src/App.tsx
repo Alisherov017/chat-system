@@ -3,20 +3,18 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
 import Home from "./components/home/Home";
-import CreateChannel from "./components/CreateChannel";
+import ViewParticipants from "./components/participants/ViewParticipants";
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/SignIn" /> },
   { path: "/SignIn", element: <SignIn /> },
   { path: "/SignUp", element: <SignUp /> },
   { path: "/home", element: <Home /> },
-  { path: "/CreateChannel", element: <CreateChannel /> },
-  // { path: "/chat/:channelId", element: <Chat /> },
-
-  // <Route path="/chat/:channelId" element={<Chat />} />
+  { path: "/ViewParticipants", element: <ViewParticipants /> },
 ]);
 
 const App = () => {

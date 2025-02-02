@@ -8,14 +8,19 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
 
-// Отправка сообщения в канал
-export const sendMessage = async (message: string, channelId: string) => {
+// Sending a message to the channel
+export const sendMessage = async (
+  message: string,
+  channelId: string,
+  senderName: string
+) => {
   try {
     const messagesRef = collection(db, "channels", channelId, "Messages");
     await addDoc(messagesRef, {
       senderId: auth.currentUser?.uid,
+      senderName: senderName,
       message: message,
-      timestamp: serverTimestamp(), // Время отправки сообщения
+      timestamp: serverTimestamp(),
     });
     console.log("Message sent!");
   } catch (e) {
@@ -23,7 +28,7 @@ export const sendMessage = async (message: string, channelId: string) => {
   }
 };
 
-// Получение сообщений для канала в реальном времени
+// getting messages
 export const getMessages = (
   channelId: string,
   setMessages: React.Dispatch<React.SetStateAction<any>>
@@ -33,8 +38,8 @@ export const getMessages = (
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const messagesList = snapshot.docs.map((doc) => doc.data());
-    setMessages(messagesList); // Обновляем состояние с новыми сообщениями
+    setMessages(messagesList);
   });
 
-  return unsubscribe; // Возвращаем функцию для отписки
+  return unsubscribe;
 };
