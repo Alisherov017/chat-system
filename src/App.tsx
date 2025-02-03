@@ -10,7 +10,8 @@ import Home from "./components/home/Home";
 import ViewParticipants from "./components/participants/ViewParticipants";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/SignIn" /> },
+  // { path: "/", element: <Navigate to="/SignIn" /> },
+  { path: "/", element: <Navigate to="/SignIn" replace /> },
   { path: "/SignIn", element: <SignIn /> },
   { path: "/SignUp", element: <SignUp /> },
   { path: "/home", element: <Home /> },
