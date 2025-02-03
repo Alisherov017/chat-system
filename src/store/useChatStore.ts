@@ -52,16 +52,17 @@ export const useStore = create<Store>((set, get) => {
 
   onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
-      const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-      const nameFromDB = userDoc.exists()
-        ? userDoc.data().name
-        : firebaseUser.displayName || "No Name";
+      let userName = firebaseUser.displayName || "No Name";
 
+      const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+      if (userDoc.exists()) {
+        userName = userDoc.data().name;
+      }
       useStore.setState({
         user: {
           uid: firebaseUser.uid,
           email: firebaseUser.email || "",
-          name: nameFromDB,
+          name: userName,
         },
       });
     } else {
