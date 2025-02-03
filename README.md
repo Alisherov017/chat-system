@@ -1,50 +1,70 @@
-# React + TypeScript + Vite
+# Chat Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
+This is a real-time chat application built with **Vite + React**, **Firebase Firestore**, and **Zustand** for state management. The application allows users to create channels, join conversations, and send messages.
 
-Currently, two official plugins are available:
+## Features
+- 🔥 **User Authentication**: Sign up and log in using Firebase Authentication.
+- 💬 **Real-time Chat**: Messages update instantly using Firestore.
+- 📌 **Channels**: Users can create, join, and leave chat channels.
+- 🛠 **State Management**: Managed using Zustand.
+- 🎨 **Styled with Green Theme** (`#218838`).
+- 🚀 **Hosted on Vercel**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies Used
+- **Frontend**: React (Vite)
+- **Backend**: Firebase Firestore
+- **Authentication**: Firebase Auth
+- **State Management**: Zustand
+- **Deployment**: Vercel
 
-## Expanding the ESLint configuration
+## Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-username/chat-app.git
+   cd chat-app
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Set up your Firebase project:
+   - Create a Firebase project.
+   - Enable Firestore and Authentication (Email & Password).
+   - Copy Firebase configuration into `.env`:
+     ```env
+     VITE_FIREBASE_API_KEY=your_api_key
+     VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+     VITE_FIREBASE_PROJECT_ID=your_project_id
+     VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+     VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+     VITE_FIREBASE_APP_ID=your_app_id
+     ```
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+4. Start the development server:
+   ```sh
+   npm run dev
+   ```
+5. Open `http://localhost:5173` in your browser.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Deployment
+This project is deployed on **Vercel**. To deploy:
+```sh
+npm run build
+vercel --prod
+```
+Make sure your `vercel.json` includes:
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Contribution
+Feel free to fork and submit pull requests. If you find any issues, open an issue in the repository.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## License
+MIT License. Feel free to use and modify.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
