@@ -8,7 +8,6 @@ This is a real-time chat application built with **Vite + React**, **Firebase Fir
 - 💬 **Real-time Chat**: Messages update instantly using Firestore.
 - 📌 **Channels**: Users can create, join, and leave chat channels.
 - 🛠 **State Management**: Managed using Zustand.
-- 🎨 **Styled with Green Theme** (`#218838`).
 - 🚀 **Hosted on Vercel**.
 
 ## Technologies Used
